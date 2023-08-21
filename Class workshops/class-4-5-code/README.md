@@ -245,7 +245,7 @@
     ```
 34. Visiting drizzle studio will results in following
 
-    ![drizzle_home](./public/drizzle_home.png)
+    ![drizzle_home](./public/drizzle_home.jpg)
 
 # Class 5 JWT-AUTH COMPLETE follow tutorial
 
