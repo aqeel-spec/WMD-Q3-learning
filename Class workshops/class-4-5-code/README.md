@@ -179,7 +179,7 @@
 - Follow this section only if new storage is created for this application. In case if you are using any storage with some old data or it is connected to some other application too, running the migration this way will update all the tables in the db based on the schema defined in this application. It will delete or modify all other tables from the db which are not defined in the schema. If you are using a storage with some other applications connected to it skip this section and move to next one.
 
 24. create `/src/lib/db/migrate.ts`
-    * Go to file `/src/lib/db/schema/mirtate.ts` to get Full page
+    * Go to file `/src/lib/db/mirtate.ts` to get Full page
 26. Update `package.json` and add following to `scripts`
     + This command will create table on vercel database
     ```json
@@ -245,7 +245,7 @@
     ```
 34. Visiting drizzle studio will results in following
 
-    ![drizzle studio](./public/drizzle_studio.png)
+    ![drizzle studio](./public/drizzle_home.png)
 
 # Class 5 JWT-AUTH COMPLETE follow tutorial
 
