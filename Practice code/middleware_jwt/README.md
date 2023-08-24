@@ -3,6 +3,14 @@
 * [JWT debugger](https://jwt.io/#debugger)
 * [Middleware protected routes](https://nextjs.org/docs/app/building-your-application/routing/middleware)
 
+# Live site link
+  Click on vercel to see it [ vercel](https://jwt-middleware-one.vercel.app/)
+## Dummy user
+```json
+ "email" : "abc@gmail.com"
+ "password ": "12345678"
+```
+
 ## Deploy the project on vercel
 1. Sign up or log in at [vercel](https://vercel.com/new)
 2. Install vercel cli if already not installed
@@ -179,4 +187,7 @@ http://127.0.0.1:5555/
 5. Visiting drizzle studio will results in following
     ![drizzle_landing](./public/drizzle_landing.jpg)
     ![drizzle_table](./public/drizzle_table.jpg)
-    
+
+# JWT with middleware
+
+1. create middleware `src/middleware.ts`
