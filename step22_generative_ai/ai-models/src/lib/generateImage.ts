@@ -1,7 +1,7 @@
 import { textToImage } from "@/utils/text-to-image";
 import { promises as fs } from "fs";
 
-export async function generateImage(caption: string): Promise<string | undefined> {
+export async function generateImage( caption: string): Promise<string | undefined> {
     try {
         const imageBytes = await textToImage({
             inputs: caption,

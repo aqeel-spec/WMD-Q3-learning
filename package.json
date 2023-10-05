@@ -1,0 +1,8 @@
+{
+	"dependencies": {
+		"langchain": "^0.0.160"
+	},
+	"devDependencies": {
+		"@types/node": "^20.8.2"
+	}
+}
