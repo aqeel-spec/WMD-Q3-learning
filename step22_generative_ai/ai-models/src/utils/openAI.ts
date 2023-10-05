@@ -24,7 +24,7 @@ export async function aiModel(title: string, price: number | string) {
         rating
         stock
         brand
-        category
+        category \ it should not contain array just only one category
         thumbnail
         images : []
       
@@ -41,7 +41,8 @@ export async function aiModel(title: string, price: number | string) {
       rating
       stock
       brand
-      category
+      category \ it should not contain array just only one category
+      prompt \ create a prompt for the image generation  it should look like real image not cartoonish
       thumbnail
       images : []
     
