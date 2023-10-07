@@ -1,42 +1,14 @@
-import { Product } from "@/types/product";
+import { CreateProduct, Product } from "@/types/product";
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
+import { db } from "@/lib/db/drizzle";
+import { AiProducts } from "@/lib/db/types";
+import { products } from "@/lib/db/schema/aiProducts";
+import { asc, eq } from "drizzle-orm";
 
 const gql = String.raw;
+const { v4: uuidv4 } = require('uuid');
 
-let dummyProducts = [
-    {
-        id: "c15d2c45-81a7-4a32-88f7-a4b6c7d01725",
-        title: "Fortuner",
-        description: "Experience the power and performance of the Fortuner with its advanced powertrain and high-performance features, all backed by Toyota’s legendary reliability.",
-        price: 500,
-        discountPercentage: 0,
-        rating: 4,
-        stock: 10,
-        brand: "Toyota",
-        category: "SUV",
-        prompt: "A white Fortuner parked in an urban area at night with city lights in the background.",
-        thumbnail: "https://res.cloudinary.com/ddj5gisb3/image/upload/v1696665430/Nextjs%20AI%20generated%20images/Fortuner.png.jpg",
-        images: []
-    },
-    {
-        id: "c70d3483-63e5-44ad-8ae0-eb241d8873d6",
-        title: "Check Shirt with Pocket Square",
-        description: "Style up with this simple yet trendy check shirt by Sauvage. It comes with a pocket square for added fashion.",
-        price: 29.99,
-        discountPercentage: 10,
-        rating: 4.7,
-        stock: 82,
-        brand: "Sauvage",
-        category: "Shirts",
-        thumbnail: "https://res.cloudinary.com/ddj5gisb3/image/upload/v1696665511/Nextjs%20AI%20generated%20images/Check-Shirt-with-Pocket-Square.png.jpg",
-        images: [
-            "https://example.com/checkshirt_01.jpg",
-            "https://example.com/checkshirt_02.jpg",
-            "https://example.com/checkshirt_03.jpg"
-        ]
-    }
-]
 
 const typeDefs = gql`
    type Query {
@@ -44,9 +16,19 @@ const typeDefs = gql`
    }
 
    type Mutation {
-    createProduct (product : productInputType) : product 
-    deleteProduct (id : String) : String
+    createProduct (product : createProduct) : product 
+    deleteProduct (id : String!) : DeleteProductResult
     updateProduct(id: String, product: productInput) : product
+   }
+
+   type DeleteProductResult {
+        product: product
+        message: String
+    }
+
+   input createProduct {
+    title : String
+    price : Float
    }
    input productInput {
     title: String
@@ -97,39 +79,56 @@ const typeDefs = gql`
 
 const resolvers = {
     Query: {
-        getProducts: () => {
-            return dummyProducts
+        getProducts: async () => {
+            const productList = await db.query.products.findMany({
+                orderBy: [asc(products.created_at)],
+            });
+            return productList
         }
     },
     Mutation: {
-        createProduct: (root: {}, args: { product: {} }, context: {}, info: {}) => {
-            dummyProducts.push(args.product as any);
-            return args.product
-        },
-        deleteProduct: (root: {}, args: { id: String }, context: {}, info: {}) => {
-            dummyProducts = dummyProducts.filter(product => product.id !== args.id);
-            return `Product deleted Successfully at id ${args.id}`
-        },
-        updateProduct: (root: {}, args: { id: string, product: Product[] }, context: {}, info: {}) => {
-            const { id, product: updatedProductData } = args;
-            // Find the index of the product with the given id in the dummyProducts array
-            const productIndex = dummyProducts.findIndex(product => product.id === id);
+        createProduct: async (root: {}, args: { product: CreateProduct }, context: {}, info: {}) => {
+            // dummyProducts.push(args.product as any);
 
-            // If the product with the given id is found
-            if (productIndex !== -1) {
-                // Update the product properties with the provided options
-                dummyProducts[productIndex] = {
-                    ...dummyProducts[productIndex],
-                    ...updatedProductData,
-                    id: dummyProducts[productIndex].id, // Ensure the id remains the same
-                };
-
-                // Return the updated product
-                return dummyProducts[productIndex];
+            const aiGenerated = await fetch(`http://localhost:3000/api/models`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: args.product.title,
+                    price: args.product.price
+                })
+            })
+            const jsonResult = await aiGenerated.json();
+            if (!aiGenerated.ok) {
+                return "Something happen while generating ai product"
             }
 
-            // If the product with the given id is not found, throw an error
-            throw new Error(`Product with ID ${id} not found`);
+            const insertToDb = await db.insert(products).values(jsonResult.data).returning();
+            return insertToDb[0]
+        },
+        deleteProduct: async (root: {}, args: { id: String }, context: {}, info: {}) => {
+            const deletedProduct = await db.delete(products)
+                .where(eq(products.id, args.id as any))
+                .returning();
+            console.log("deleteProductId", args.id)
+            if (deletedProduct.length > 0) {
+                return { message : "Deleted product successfully" , product : deletedProduct[0] }
+            } else {
+                return { message : "No product found against your id" , product : null }
+            }
+        },
+        updateProduct: async (root: {}, args: { id: string, product: Product }, context: {}, info: {}) => {
+
+            const updatedProduct = await db.update(products)
+               .set(args.product)
+               .where(eq(products.id , args.id))
+               .returning();
+            if (updatedProduct.length > 0 ) {
+                return updatedProduct[0]
+            }
+            return null
         }
     }
 }

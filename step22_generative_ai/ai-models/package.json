@@ -7,12 +7,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate": "drizzle-kit generate:pg --schema=./src/lib/db/schema/*",
+    "drop": "drizzle-kit drop --out=drizzle",
+    "migrate": "node -r esbuild-register src/lib/db/migration.ts",
+    "drizzle": "drizzle-kit studio --port 5555"
   },
   "dependencies": {
     "@apollo/server": "^4.9.4",
     "@as-integrations/next": "^2.0.2",
+    "@vercel/postgres": "^0.5.0",
     "cloudinary": "^1.41.0",
+    "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.28.6",
+    "esbuild-register": "^3.5.0",
+    "pg": "^8.11.3",
+    "postgres": "^3.3.5",
     "react": "^18",
     "react-dom": "^18",
     "uuid": "^9.0.1"
@@ -22,6 +32,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10",
+    "drizzle-kit": "^0.19.13",
     "eslint": "^8",
     "eslint-config-next": "13.5.4",
     "next": "link:@types/@as-integrations/next",
