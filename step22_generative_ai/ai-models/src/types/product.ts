@@ -16,3 +16,12 @@ export type CreateProduct = {
     title : string,
     price : number
 }
+export interface GetProduct {
+    id: string;
+    title: string;
+    description: string;
+    brand: string;
+    category: string;
+    thumbnail: string;
+    price : number 
+}
