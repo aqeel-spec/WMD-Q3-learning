@@ -22,7 +22,7 @@ export async function aiModel(title: string, price: number | string) {
         price
         discountPercentage
         rating
-        stock
+        stock \ stock should be number like 12 , 34 etc. not in boolean form
         brand
         category \ it should not contain array just only one category
         thumbnail
@@ -39,7 +39,7 @@ export async function aiModel(title: string, price: number | string) {
       price
       discountPercentage
       rating
-      stock
+      stock \ stock should be number like 12 , 34 etc. not in boolean form
       brand
       category \ it should not contain array just only one category
       prompt \ create a prompt for the image generation  it should look like real image not cartoonish
