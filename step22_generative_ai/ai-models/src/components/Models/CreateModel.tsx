@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form"
 import { createQuery } from "@/lib/graphql/mutations/createProduct"
 import toast from "react-hot-toast"
 import UpdateGeneratedModel from "./UpdateModel";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 
 type CreateProduct = {
@@ -63,7 +64,7 @@ export function CreateModel() {
 
     return (
         <>
-            <UpdateGeneratedModel isOpen={isOpen} isLoading={loading} setIsOpen={setIsOpen} product={data?.createProduct} />
+            <UpdateGeneratedModel isOpen={isOpen} isLoading={loading} setIsOpen={setIsOpen} product={data && data} />
             <Dialog>
                 <DialogTrigger asChild>
                     <Button variant="outline">Add Product</Button>
@@ -93,9 +94,12 @@ export function CreateModel() {
                                 {...register("price")}
                             />
                         </div>
-                        <DialogFooter>
-                            <Button type="submit">Generate Now</Button>
-                        </DialogFooter>
+                        <DialogClose>
+                            <DialogFooter>
+                                <Button type="submit">Generate Now</Button>
+                            </DialogFooter>
+                        </DialogClose>
+
                     </form>
 
                 </DialogContent>

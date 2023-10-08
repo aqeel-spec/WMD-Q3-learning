@@ -10,6 +10,7 @@ export type Product = {
     prompt: string;
     thumbnail: string;
     images: string[];
+    id?: string
 };
 
 export type CreateProduct = {

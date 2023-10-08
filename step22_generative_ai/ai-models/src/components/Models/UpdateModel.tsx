@@ -11,65 +11,87 @@ import {
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Product } from "@/types/product";
+import { GetProduct, Product } from "@/types/product";
 import Image from "next/image";
 import { Textarea } from "../ui/textarea";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from '@apollo/client';
 import toast from 'react-hot-toast';
 import SkeletonForm from './Skelton';
+import { updateGeneratedProduct } from '@/lib/graphql/mutations/updateGeneratedProduct';
+import LoadingDots from '../LoadingDots';
+import { DialogClose } from '@radix-ui/react-dialog';
 
 
 
-interface UpdateProduct extends Product {
-    id: string,
+
+
+// const initialData: UpdateProduct = {
+//     price: 300,
+//     title: "Rose",
+//     brand: "Nature's beauty",
+//     category: "Flowers",
+//     description: "A beautiful rose with vibrant colors for everyone.",
+//     discountPercentage: 0,
+//     id: "7157db58-2447-416b-b8a2-2bc6d5ec8c3c",
+//     stock: 12,
+//     rating: 4.7,
+//     thumbnail: "https://res.cloudinary.com/ddj5gisb3/image/upload/v1696723431/Nextjs%20AI%20generated%20images/Rose.png.jpg",
+//     prompt: '',
+//     images: []
+// };
+interface ProductF {
+    createProduct: Product
 }
-
-const initialData: UpdateProduct = {
-    price: 300,
-    title: "Rose",
-    brand: "Nature's beauty",
-    category: "Flowers",
-    description: "A beautiful rose with vibrant colors for everyone.",
-    discountPercentage: 0,
-    id: "7157db58-2447-416b-b8a2-2bc6d5ec8c3c",
-    stock: 12,
-    rating: 4.7,
-    thumbnail: "https://res.cloudinary.com/ddj5gisb3/image/upload/v1696723431/Nextjs%20AI%20generated%20images/Rose.png.jpg",
-    prompt: '',
-    images: []
-};
 type Props = {
     isOpen: boolean,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-    product: UpdateProduct
+    product: ProductF
     isLoading: boolean
 }
 
-const UpdateGeneratedModel: React.FC<Props> = ({ isOpen, setIsOpen , isLoading , product}) => {
-    console.log("🚀 ~ file: UpdateModel.tsx:50 ~ product:", product)
-    const { register, handleSubmit , control } = useForm<UpdateProduct>({
-        defaultValues: product,
-    });
-    // const [mutateFunction, { data, loading, error }] = useMutation(updateQuery);
+const UpdateGeneratedModel: React.FC<Props> = ({ isOpen, setIsOpen, isLoading, product }) => {
+    const { register, handleSubmit, control, setValue } = useForm<Product>();
 
-    const onSubmit = async (data: UpdateProduct) => {
-        console.log("🚀 ~ file: UpdateModel.tsx:56 ~ onSubmit ~ data:", data)
+    React.useEffect(() => {
+        if (product && product.createProduct) {
+            const defaultValues = product.createProduct;
 
-        // try {
-        //     toast.loading("Generating product ...");
-        //     const createProduct = await mutateFunction({
-        //         variables: {}
-        //     })
-        //     console.log("Mutation result:", createProduct);
-        // } catch (error) {
-        //     console.error("Mutation error:", error);
-        //     // Handle the error, e.g., display an error message
-        // } finally {
-        //     setIsOpen(false);
-        //     toast.dismiss();
-        // }
-        // Update product data
+            // Set default values for each form field
+            setValue("title", defaultValues.title);
+            setValue("description", defaultValues.description);
+            setValue("price", Number(defaultValues.price));
+            setValue("discountPercentage", defaultValues.discountPercentage);
+            setValue("rating", defaultValues.rating);
+            setValue("stock", defaultValues.stock);
+            setValue("brand", defaultValues.brand);
+            setValue("category", defaultValues.category);
+            setValue("prompt", defaultValues.prompt);
+            setValue("thumbnail", defaultValues.thumbnail);
+            setValue("images", defaultValues.images);
+        }
+    }, [product, setValue]);
+    const [mutateFunction, { data, loading, error }] = useMutation(updateGeneratedProduct);
+
+    const onSubmit = async (data: Product) => {
+
+        try {
+            const createProduct = await mutateFunction({
+                variables: {
+                    updateProductId: product?.createProduct?.id, // Use the product's original ID
+                    product: data
+                }
+            })
+            console.log("Mutation result:", createProduct);
+            // Handle success or show a success message if needed
+            // setIsOpen(false);
+            toast.success("Product updated successfully");
+        } catch (error) {
+            console.error("Mutation error:", error);
+            // Handle the error, e.g., display an error message
+        } finally {
+            setIsOpen(false);
+        }
     };
 
     return (
@@ -92,7 +114,7 @@ const UpdateGeneratedModel: React.FC<Props> = ({ isOpen, setIsOpen , isLoading ,
                                 <div className="p-8">
                                     <Image
                                         alt={"title"}
-                                        src={product.thumbnail}
+                                        src={product?.createProduct?.thumbnail}
                                         width={300}
                                         height={300}
                                         className="shadow-2xl bg-white  
@@ -176,7 +198,6 @@ const UpdateGeneratedModel: React.FC<Props> = ({ isOpen, setIsOpen , isLoading ,
                                     <Controller
                                         name="rating"
                                         control={control}
-                                        defaultValue={initialData.rating}
                                         render={({ field }) => (
                                             <div className="rating">
                                                 {[1, 2, 3, 4, 5].map((value) => (
@@ -196,8 +217,15 @@ const UpdateGeneratedModel: React.FC<Props> = ({ isOpen, setIsOpen , isLoading ,
 
 
 
-                                <Button className="mt-4" type="submit">Update Changes</Button>
-                                <Button className="mt-4" type="button">Cancel </Button>
+                                <Button className="mt-4" type="submit">
+                                    {loading ? (
+                                        <LoadingDots className='h-2 w-2 text-white bg-white ' />
+                                    ) : "Update Changes"}
+                                </Button>
+                                <DialogClose>
+                                    <Button className="mt-4" type="button">Cancel </Button>
+                                </DialogClose>
+
                             </div>
                         </form>
                     )
