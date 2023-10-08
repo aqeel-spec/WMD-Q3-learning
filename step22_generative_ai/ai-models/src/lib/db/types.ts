@@ -1,4 +1,4 @@
 import { InferInsertModel } from 'drizzle-orm';
-import { aiProducts } from './schema/aiProducts'
+import { products } from './schema/aiProducts'
 
-export type AiProducts = InferInsertModel<typeof aiProducts>;
+export type AiProducts = InferInsertModel<typeof products>;

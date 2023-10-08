@@ -18,6 +18,7 @@ import { createQuery } from "@/lib/graphql/mutations/createProduct"
 import toast from "react-hot-toast"
 import UpdateGeneratedModel from "./UpdateModel";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { productQuery } from "@/lib/graphql/gqlQueries";
 
 
 type CreateProduct = {
@@ -48,8 +49,11 @@ export function CreateModel() {
                         title: formData.title
                     }
                 },
+                refetchQueries : [{
+                    query: productQuery,
+                    variables: {}
+                }]
             })
-            console.log("Mutation result:", createProduct);
         } catch (error) {
             console.error("Mutation error:", error);
             // Handle the error, e.g., display an error message

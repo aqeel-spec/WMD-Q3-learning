@@ -21,6 +21,7 @@ import SkeletonForm from './Skelton';
 import { updateGeneratedProduct } from '@/lib/graphql/mutations/updateGeneratedProduct';
 import LoadingDots from '../LoadingDots';
 import { DialogClose } from '@radix-ui/react-dialog';
+import { productQuery } from '@/lib/graphql/gqlQueries';
 
 
 
@@ -80,9 +81,12 @@ const UpdateGeneratedModel: React.FC<Props> = ({ isOpen, setIsOpen, isLoading, p
                 variables: {
                     updateProductId: product?.createProduct?.id, // Use the product's original ID
                     product: data
-                }
+                },
+                refetchQueries : [{
+                    query: productQuery,
+                    variables: {}
+                }]
             })
-            console.log("Mutation result:", createProduct);
             // Handle success or show a success message if needed
             // setIsOpen(false);
             toast.success("Product updated successfully");

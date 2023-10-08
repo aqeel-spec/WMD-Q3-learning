@@ -57,6 +57,5 @@ export async function aiModel(title: string, price: number | string) {
   const result = await llm.predict(prompt);
   // Parse the JSON result
   
-  console.log(result);
   return result
 }

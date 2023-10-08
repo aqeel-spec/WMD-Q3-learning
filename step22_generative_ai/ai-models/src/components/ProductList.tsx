@@ -5,6 +5,10 @@ import Link from "next/link";
 import ProductCard from "./ProductCard";
 import { GetProduct } from "@/types/product";
 import SkeletonProductCard from './skeleton/SkeletonProductCard';
+import { useSubscription } from "@apollo/client";
+
+//export const revalidate = 5;
+
 
 const ProductList = () => {
 
@@ -26,7 +30,7 @@ const ProductList = () => {
             <div className="grid grid-cols-1 gap-2  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
                 {data?.getProducts?.map((product: GetProduct) => (
                     //<Link href={`/#product/${product.id}`} key={product.id}>
-                        <ProductCard product={product} />
+                        <ProductCard product={product} key={product.id} />
                    // </Link>
                 ))}
             </div>

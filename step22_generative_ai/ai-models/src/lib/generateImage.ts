@@ -34,7 +34,6 @@ export async function generateImage(title: string, caption: string): Promise<str
         const fileName = `${title.replace(/\s+/g, "-")}.png`;
         let filePath = `${tempFolderPath}/${fileName}`;
         await fs.writeFile(filePath, Buffer.from(imageBytes));
-        console.log(`Image saved to: ${filePath}`);
 
         const uploadResult = await cloudinary.v2.uploader.upload(filePath, {
             folder: cloudinaryFolder,
@@ -44,7 +43,6 @@ export async function generateImage(title: string, caption: string): Promise<str
         });
         // cloudinary image url is here
         const imageUrl = await uploadResult.secure_url;
-        console.log("🚀 ~ file: generateImage.ts:26 ~ generateImage ~ imageUrl:", imageUrl)
 
         // return the file path
 

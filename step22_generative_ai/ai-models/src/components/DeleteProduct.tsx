@@ -5,6 +5,7 @@ import { useMutation } from '@apollo/client';
 import { deleteQuery } from '@/lib/graphql/mutations/deleteProduct';
 import toast from 'react-hot-toast';
 import LoadingDots from './LoadingDots';
+import { productQuery } from '@/lib/graphql/gqlQueries';
 
 type Props = {
     id : string 
@@ -20,7 +21,11 @@ const DeleteProduct : React.FC<Props> = ({id}) => {
             const result = await mutateFunction({
                 variables: {
                     deleteProductId: id
-                }
+                },
+                refetchQueries : [{
+                    query: productQuery,
+                    variables: {}
+                }]
             });
 
             if (result) {
@@ -28,7 +33,6 @@ const DeleteProduct : React.FC<Props> = ({id}) => {
             }
 
 
-            console.log("Mutation result:", result);
 
             // Handle success or show a success message if needed
         } catch (error) {

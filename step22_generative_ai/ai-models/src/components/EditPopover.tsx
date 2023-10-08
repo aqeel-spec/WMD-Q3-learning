@@ -47,9 +47,6 @@ const EditPopover: React.FC<Props> = ({ product }) => {
                 },
             });
 
-
-            console.log("Mutation result:", result);
-
             // Handle success or show a success message if needed
         } catch (error) {
             console.error("Mutation error:", error);

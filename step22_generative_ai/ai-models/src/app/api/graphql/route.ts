@@ -4,7 +4,7 @@ import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { db } from "@/lib/db/drizzle";
 import { AiProducts } from "@/lib/db/types";
 import { products } from "@/lib/db/schema/aiProducts";
-import { asc, eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 
 const gql = String.raw;
 const { v4: uuidv4 } = require('uuid');
@@ -81,7 +81,7 @@ const resolvers = {
     Query: {
         getProducts: async () => {
             const productList = await db.query.products.findMany({
-                orderBy: [asc(products.created_at)],
+                orderBy: [desc(products.created_at)],
             });
             return productList
         }
@@ -90,7 +90,7 @@ const resolvers = {
         createProduct: async (root: {}, args: { product: CreateProduct }, context: {}, info: {}) => {
             // dummyProducts.push(args.product as any);
 
-            const aiGenerated = await fetch(`http://localhost:3000/api/models`, {
+            const aiGenerated = await fetch(`${process.env.URL}api/models`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -114,23 +114,23 @@ const resolvers = {
                 .returning();
             console.log("deleteProductId", args.id)
             if (deletedProduct.length > 0) {
-                return { message : "Deleted product successfully" , product : deletedProduct[0] }
+                return { message: "Deleted product successfully", product: deletedProduct[0] }
             } else {
-                return { message : "No product found against your id" , product : null }
+                return { message: "No product found against your id", product: null }
             }
         },
         updateProduct: async (root: {}, args: { id: string, product: Product }, context: {}, info: {}) => {
 
             const updatedProduct = await db.update(products)
-               .set(args.product)
-               .where(eq(products.id , args.id))
-               .returning();
-            if (updatedProduct.length > 0 ) {
+                .set(args.product)
+                .where(eq(products.id, args.id))
+                .returning();
+            if (updatedProduct.length > 0) {
                 return updatedProduct[0]
             }
             return null
         }
-    }
+    },
 }
 
 
