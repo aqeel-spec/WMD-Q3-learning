@@ -7,14 +7,14 @@ import DeleteProduct from './DeleteProduct';
 
 
 const ProductCard = ({ product }: { product: GetProduct }) => {
-    const { thumbnail, title } = product;
+    const { thumbnail, title } = product && product;
     const truncatedDescription = product.description.slice(0, 60)
 
     return (
         <div className="bg-white rounded-lg shadow-lg overflow-hidden m-4 w-auto  ">
             <Image
-                src={thumbnail}
-                alt={title}
+                src={thumbnail && thumbnail  }
+                alt={product?.title}
                 height={100}
                 width={200}
                 // layout="responsive"

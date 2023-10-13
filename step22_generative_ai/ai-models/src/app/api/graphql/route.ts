@@ -5,6 +5,7 @@ import { db } from "@/lib/db/drizzle";
 import { AiProducts } from "@/lib/db/types";
 import { products } from "@/lib/db/schema/aiProducts";
 import { asc, desc, eq } from "drizzle-orm";
+import { API_ROOT } from "@/utils/constant";
 
 const gql = String.raw;
 const { v4: uuidv4 } = require('uuid');
@@ -90,7 +91,10 @@ const resolvers = {
         createProduct: async (root: {}, args: { product: CreateProduct }, context: {}, info: {}) => {
             // dummyProducts.push(args.product as any);
 
-            const aiGenerated = await fetch(`${process.env.URL}api/models`, {
+            const url = process.env.URL
+            console.log("🚀 ~ file: route.ts:95 ~ createProduct: ~ url:", url)
+            console.log("🚀 ~ file: route.ts:96 ~ createProduct: ~ args:", API_ROOT)
+            const aiGenerated = await fetch(`${API_ROOT}/api/models`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -8,7 +8,7 @@ const llm = new OpenAI({
 
 
 
-export async function aiModel(title: string, price: number | string) {
+export default async function openAiModel (title: string, price: number | string) {
 
   let text;
 

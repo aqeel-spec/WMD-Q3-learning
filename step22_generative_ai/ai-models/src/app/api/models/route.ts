@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateImage } from "@/lib/generateImage";
-import { aiModel } from "@/utils/openAI";
+import openAiModel  from "@/utils/ai";
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -9,7 +9,7 @@ export const POST = async (request: NextRequest) => {
 
     try {
 
-        const des : any = await aiModel(body.title , body.price);
+        const des : any = await openAiModel(body.title , body.price);
         const jsonResult = JSON.parse(des);
         const imageUrl  = await generateImage( jsonResult.title ,`${jsonResult.prompt}`)
 
