@@ -19,10 +19,10 @@ export default async function openAiModel (title: string, price: number | string
         like amazon , ali baba , daraz etc.
         title
         desciption
-        price
-        discountPercentage
-        rating
-        stock \ stock should be number like 12 , 34 etc. not in boolean form
+        price  \ Float value
+        discountPercentage  \ Float value
+        rating  \ Float value  , out of 5
+        stock   \ Int value , stock should be number like 12 , 34 etc. not in boolean form
         brand
         category \ it should not contain array just only one category
         thumbnail
@@ -35,11 +35,11 @@ export default async function openAiModel (title: string, price: number | string
       if should look like professional \
       like amazon , ali baba , daraz etc.
       title
-      desciption
-      price
+      desciption 
+      price  \ Float value
       discountPercentage
-      rating
-      stock \ stock should be number like 12 , 34 etc. not in boolean form
+      rating  \ Float value , out of 5
+      stock \ Int value , stock should be number like 12 , 34 etc. not in boolean form
       brand
       category \ it should not contain array just only one category
       prompt \ create a prompt for the image generation  it should look like real image not cartoonish

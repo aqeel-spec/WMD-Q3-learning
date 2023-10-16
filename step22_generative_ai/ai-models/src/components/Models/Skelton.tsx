@@ -6,12 +6,11 @@ import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
 
 
-function SkeletonForm({ isLoading }: { isLoading: boolean }) {
+function SkeletonForm() {
 
 
     return (
-        <form
-            onSubmit={(e) => e.preventDefault()} // Prevent form submission while loading
+        <div // Prevent form submission while loading
             className="grid grid-cols-1 md:grid-cols-2 gap-2 py-4"
         >
             {/* left grid */}
@@ -67,7 +66,7 @@ function SkeletonForm({ isLoading }: { isLoading: boolean }) {
                 <button className="mt-4 w-full animate-pulse ease-linear  bg-black/25 " ></button>
             </div>
 
-        </form>
+        </div>
     );
 }
 

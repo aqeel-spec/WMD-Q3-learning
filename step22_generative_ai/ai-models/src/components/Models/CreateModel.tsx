@@ -35,9 +35,11 @@ export function CreateModel() {
         }
     });
     const [mutateFunction, { data, loading, error }] = useMutation(createQuery);
+    console.log("🚀 ~ file: CreateModel.tsx:38 ~ CreateModel while gPro. ~ error:", error)
     const [isOpen, setIsOpen] = useState(false);
 
     const onSubmit = async (formData: CreateProduct) => {
+        console.log("🚀 ~ file: CreateModel.tsx:41 ~ onSubmit ~ formData:", formData)
         setIsOpen((pre) => !pre);
 
         try {
@@ -45,15 +47,16 @@ export function CreateModel() {
             const createProduct = await mutateFunction({
                 variables: {
                     product: {
-                        price: Number(formData.price),
-                        title: formData.title
+                        title: formData?.title,
+                        price: parseFloat(formData?.price as any)
                     }
                 },
-                refetchQueries : [{
+                refetchQueries: [{
                     query: productQuery,
                     variables: {}
                 }]
             })
+            console.log("🚀 ~ file: CreateModel.tsx:57 ~ onSubmit ~ createProduct:", createProduct)
         } catch (error) {
             console.error("Mutation error:", error);
             // Handle the error, e.g., display an error message
@@ -61,6 +64,11 @@ export function CreateModel() {
             toast.dismiss();
         }
 
+    }
+
+    if (error) {
+        console.error(error)
+        return null
     }
 
 

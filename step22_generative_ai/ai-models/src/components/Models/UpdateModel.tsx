@@ -110,7 +110,7 @@ const UpdateGeneratedModel: React.FC<Props> = ({ isOpen, setIsOpen, isLoading, p
                 {/* skeleton effect when data ai is generating product */}
                 {
                     isLoading ? (
-                        <SkeletonForm isLoading={isLoading} />
+                        <SkeletonForm  />
                     ) : (
                         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-2 py-4">
                             <div className="flex flex-col  items-center">

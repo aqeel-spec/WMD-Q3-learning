@@ -3,7 +3,6 @@ import { promises as fs } from "fs";
 import os from 'os';
 
 
-// Require the Cloudinary library
 
 const cloudinary = require('cloudinary')
 
@@ -14,14 +13,12 @@ export const cloudinaryCre = cloudinary.config({
 });
 
 
-
-// const tempFolderPath = "/tmp";
-
-
 export async function generateImage(title: string, caption: string): Promise<string | undefined> {
 
     const cloudinaryFolder = "Nextjs AI generated images";
     const tempFolderPath = os.tmpdir();
+
+
 
     try {
         const imageBytes = await textToImage({
@@ -33,6 +30,7 @@ export async function generateImage(title: string, caption: string): Promise<str
         // generate file name with caption and save the image
         const fileName = `${title.replace(/\s+/g, "-")}.png`;
         let filePath = `${tempFolderPath}/${fileName}`;
+
         await fs.writeFile(filePath, Buffer.from(imageBytes));
 
         const uploadResult = await cloudinary.v2.uploader.upload(filePath, {
@@ -44,8 +42,6 @@ export async function generateImage(title: string, caption: string): Promise<str
         // cloudinary image url is here
         const imageUrl = await uploadResult.secure_url;
 
-        // return the file path
-
         await fs.unlink(filePath);
 
         return imageUrl;
@@ -54,5 +50,6 @@ export async function generateImage(title: string, caption: string): Promise<str
 
         // return undefined if an error occurs
         return undefined;
-    } 
+        
+    }
 }

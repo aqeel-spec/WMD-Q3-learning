@@ -1,11 +1,19 @@
 import { CreateProduct, Product } from "@/types/product";
 import { ApolloServer } from "@apollo/server";
+// import { ApolloServer } from '@apollo/server/nextjs';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { db } from "@/lib/db/drizzle";
 import { AiProducts } from "@/lib/db/types";
 import { products } from "@/lib/db/schema/aiProducts";
 import { asc, desc, eq } from "drizzle-orm";
 import { API_ROOT } from "@/utils/constant";
+// resolving core issues
+import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
+
+// import { ApolloServerPluginInlineTrace } from '@apollo/server/plugin/inlineTrace';
+import { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPageProductionDefault } from '@apollo/server/plugin/landingPage/default';
+
+
 
 const gql = String.raw;
 const { v4: uuidv4 } = require('uuid');
@@ -90,27 +98,34 @@ const resolvers = {
     Mutation: {
         createProduct: async (root: {}, args: { product: CreateProduct }, context: {}, info: {}) => {
             // dummyProducts.push(args.product as any);
-
-            const url = process.env.URL
-            console.log("🚀 ~ file: route.ts:95 ~ createProduct: ~ url:", url)
-            console.log("🚀 ~ file: route.ts:96 ~ createProduct: ~ args:", API_ROOT)
-            const aiGenerated = await fetch(`${API_ROOT}/api/models`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    title: args.product.title,
-                    price: args.product.price
+            try {
+                const aiGenerated = await fetch(`${API_ROOT}/api/models`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: args.product.title,
+                        price: Number(args.product.price)
+                    })
                 })
-            })
-            const jsonResult = await aiGenerated.json();
-            if (!aiGenerated.ok) {
-                return "Something happen while generating ai product"
+                const jsonResult = await aiGenerated.json();
+                if (!aiGenerated.ok) {
+                    return "Something happen while generating ai product"
+                }
+    
+                if(jsonResult.data) {
+                    const insertToDb = await db.insert(products).values(jsonResult.data).returning();
+                    return insertToDb[0]
+                }
+                else {
+                    console.log("Cannot generate AI product")
+                }
+                
+            } catch (error : any) {
+                console.log("🚀 ~ file: route.ts:120 ~ createProduct: ~ error:", error)
+                // throw new Error("Something went wrong")
             }
-
-            const insertToDb = await db.insert(products).values(jsonResult.data).returning();
-            return insertToDb[0]
         },
         deleteProduct: async (root: {}, args: { id: String }, context: {}, info: {}) => {
             const deletedProduct = await db.delete(products)
@@ -138,10 +153,24 @@ const resolvers = {
 }
 
 
+const parseOptions = { noLocation: true };
 const server = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    includeStacktraceInErrorResponses: true,
+    apollo: {
+        key: process.env.APOLLO_KEY,
+        graphRef: process.env.APOLLO_GRAPH_REF,
+    },
+    plugins: [
+        ApolloServerPluginUsageReporting({
+            sendErrors: { unmodified: true },
+        }),
+        process.env.NODE_ENV === 'production' ? ApolloServerPluginLandingPageProductionDefault() : ApolloServerPluginLandingPageLocalDefault({ embed: true })
+    ],
+    parseOptions
 })
+
 
 const handler = startServerAndCreateNextHandler(server);
 
