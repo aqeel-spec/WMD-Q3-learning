@@ -33,7 +33,7 @@
 # print(dir(name))   # methods
 
 # example 06
-name: list[str] = ["a",2,"c"]
+name: list[str,str] = ["a","c"]
 print(name)
 print(type(name))  # class
 print(id(name))    # address
